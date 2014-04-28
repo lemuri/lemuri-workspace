@@ -4,8 +4,7 @@
         <file>qml/background.jpg</file>
         <file>qml/closebutton.png</file>
         <file>qml/compositor.js</file>
-        <file>qml/ContrastEffect.qml</file>
-        <file>qml/WindowChrome.qml</file>
+        <file>qml/SurfaceRenderer.qml</file>
         <file>qml/WindowContainer.qml</file>
     </qresource>
 </RCC>

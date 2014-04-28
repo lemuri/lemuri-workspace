@@ -13,6 +13,7 @@ find_package(Qt5 COMPONENTS
 
 # We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
 add_definitions(${Qt5Core_DEFINITIONS} -DQT_COMPOSITOR_QUICK)
+add_definitions(-std=gnu++11)
 
 ## Enable Qt's automoc
 set(CMAKE_AUTOMOC ON)

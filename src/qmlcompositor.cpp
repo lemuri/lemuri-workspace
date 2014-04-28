@@ -1,5 +1,7 @@
 #include "qmlcompositor.h"
 
+#include "surfaceitem.h"
+
 #include <QQmlContext>
 
 QmlCompositor::QmlCompositor()
@@ -21,6 +23,46 @@ QWaylandSurface *QmlCompositor::fullscreenSurface() const
     return m_fullscreenSurface;
 }
 
+void QmlCompositor::surfaceMapped()
+{
+    QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
+    //Ignore surface if it's not a window surface
+    if (!surface->hasShellSurface())
+        return;
+
+    qDebug() << Q_FUNC_INFO << surface->title() << surface->windowType() << surface->windowFlags();
+    if (surface->windowType() == QWaylandSurface::Popup) {
+        qDebug() << surface->title() << "POPUP";
+    }
+    QWaylandSurfaceItem *item = new SurfaceItem(surface, rootObject());
+    surface->setSurfaceItem(item);
+
+    item->setTouchEventsEnabled(true);
+//    item->takeFocus();
+    emit windowAdded(QVariant::fromValue(static_cast<QQuickItem *>(item)));
+}
+
+void QmlCompositor::surfaceUnmapped()
+{
+    QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
+    if (surface == m_fullscreenSurface)
+        m_fullscreenSurface = 0;
+    QQuickItem *item = surface->surfaceItem();
+    qDebug() << Q_FUNC_INFO << item;
+    emit windowDestroyed(QVariant::fromValue(item));
+}
+
+void QmlCompositor::surfaceDestroyed(QObject *object)
+{
+    QWaylandSurface *surface = static_cast<QWaylandSurface *>(object);
+    if (surface == m_fullscreenSurface)
+        m_fullscreenSurface = 0;
+    QQuickItem *item = surface->surfaceItem();
+    if (item) {
+        emit windowDestroyed(QVariant::fromValue(item));
+    }
+}
+
 void QmlCompositor::resizeEvent(QResizeEvent *event)
 {
     QQuickView::resizeEvent(event);
@@ -29,7 +71,10 @@ void QmlCompositor::resizeEvent(QResizeEvent *event)
 
 void QmlCompositor::surfaceCreated(QWaylandSurface *surface)
 {
-    connect(surface, SIGNAL(destroyed(QObject *)), this, SLOT(surfaceDestroyed(QObject *)));
-    connect(surface, SIGNAL(mapped()), this, SLOT(surfaceMapped()));
-    connect(surface,SIGNAL(unmapped()), this,SLOT(surfaceUnmapped()));
+    connect(surface, &QWaylandSurface::destroyed,
+            this, &QmlCompositor::surfaceDestroyed);
+    connect(surface, &QWaylandSurface::mapped,
+            this, &QmlCompositor::surfaceMapped);
+    connect(surface, &QWaylandSurface::unmapped,
+            this, &QmlCompositor::surfaceUnmapped);
 }

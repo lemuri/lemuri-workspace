@@ -52,7 +52,7 @@ Item {
 
     visible: isFullscreen || !root.hasFullscreenWindow
     onVisibleChanged: {
-        child.clientRenderingEnabled = visible
+        window.clientRenderingEnabled = visible
         console.log("visibility changed: " + visible);
     }
 
@@ -64,13 +64,18 @@ Item {
     property real targetHeight
     property real targetScale
 
-    property variant child: null
-    property variant chrome: null
+    property variant window: null
+    onWindowChanged: {
+        window.parent = container
+        targetWidth = window.width
+        targetHeight = window.height
+    }
+
     property bool animationsEnabled: false
     property bool isFullscreen: state === "fullscreen"
     property int index
 
-    state: /*child && chrome && chrome.selected && child.focus ? "fullscreen" : */ "normal"
+    state: "normal"
 
     Behavior on x {
         enabled: container.animationsEnabled;
@@ -102,18 +107,12 @@ Item {
         NumberAnimation { easing.type: Easing.Linear; duration: 250; }
     }
 
-    ContrastEffect {
+    SurfaceRenderer {
         id: effect
-        source: child
-        anchors.fill: child
-        blend: { if (child && chrome && (chrome.selected || child.focus)) 0.0; else 0.6 }
+        source: window
+        anchors.fill: window
         opacity: 1.0
         z: 1
-
-        Behavior on blend {
-            enabled: true;
-            NumberAnimation { easing.type: Easing.Linear; duration: 200; }
-        }
     }
 
     transform: [
@@ -157,7 +156,7 @@ Item {
                     NumberAnimation { target: container; property: "scale"; easing.type: Easing.Linear; to: fullscreenScale; duration: 400; }
                 }
                 ScriptAction {
-                    script: compositor.fullscreenSurface = child.surface
+                    script: compositor.fullscreenSurface = window.surface
                 }
             }
         }
@@ -168,33 +167,14 @@ Item {
         NumberAnimation { target: scaleTransform; property: "yScale"; easing.type: Easing.Linear; to: 0.01; duration: 200; }
         NumberAnimation { target: scaleTransform; property: "xScale"; easing.type: Easing.Linear; to: 0.01; duration: 150; }
         NumberAnimation { target: container; property: "opacity"; easing.type: Easing.Linear; to: 0.0; duration: 150; }
-        ScriptAction { script: container.parent.removeWindow(child); }
+        ScriptAction { script: container.parent.removeWindow(window); }
     }
 
     function runDestroyAnimation() {
         destroyAnimation.start();
     }
 
-    Image {
-        source: "closebutton.png"
-        smooth: true
-
-        opacity: !isFullscreen && chrome && chrome.selected ? 1 : 0
-        Behavior on opacity {
-            NumberAnimation { easing.type: Easing.InCubic; duration: 200; }
-        }
-
-        x: parent.width - 32
-        y: 4
-        width: 24
-        height: 24
-        z: 4
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                child.surface.destroySurface()
-            }
-        }
-    }
+//    Component.onCompleted: {
+//        window.takeFocus()
+//    }
 }

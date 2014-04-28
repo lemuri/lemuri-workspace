@@ -2,6 +2,7 @@ file(GLOB QML_SRC qml/*.qml qml/*.js)
 
 set(lemuri_workspace_SRCS
     ${QML_SRC}
+    surfaceitem.cpp
     qmlcompositor.cpp
     main.cpp
 )

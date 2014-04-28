@@ -83,22 +83,14 @@ Item {
 
     function windowAdded(window) {
         var windowContainerComponent = Qt.createComponent("WindowContainer.qml");
-        var windowContainer = windowContainerComponent.createObject(root);
-
-        window.parent = windowContainer;
-
-        windowContainer.targetWidth = window.width;
-        windowContainer.targetHeight = window.height;
-        windowContainer.child = window;
-
-        var windowChromeComponent = Qt.createComponent("WindowChrome.qml");
-        var windowChrome = windowChromeComponent.createObject(window);
+        var windowContainer = windowContainerComponent.createObject(root,
+                                                                    {"window": window});
 
         CompositorLogic.addWindow(windowContainer);
 
         windowContainer.opacity = 1
         windowContainer.animationsEnabled = true;
-        windowContainer.chrome = windowChrome;
+        window.takeFocus()
     }
 
     function windowResized(window) {
@@ -110,6 +102,7 @@ Item {
     }
 
     function windowDestroyed(window) {
+        console.debug("mail.qml windowDestroyed: " + window);
         var windowContainer = window.parent;
         if (windowContainer.runDestroyAnimation)
             windowContainer.runDestroyAnimation();
@@ -118,7 +111,6 @@ Item {
     function removeWindow(window) {
         var windowContainer = window.parent;
         CompositorLogic.removeWindow(windowContainer);
-        windowContainer.chrome.destroy();
         windowContainer.destroy();
         compositor.destroyWindow(window);
     }

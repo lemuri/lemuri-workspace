@@ -42,36 +42,9 @@ public slots:
     }
 
 private slots:
-    void surfaceMapped() {
-        QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
-        //Ignore surface if it's not a window surface
-        if (!surface->hasShellSurface())
-            return;
-
-        QWaylandSurfaceItem *item = surface->surfaceItem();
-        //Create a WaylandSurfaceItem if we have not yet
-        if (!item)
-            item = new QWaylandSurfaceItem(surface, rootObject());
-
-        item->setTouchEventsEnabled(true);
-        //item->takeFocus();
-        emit windowAdded(QVariant::fromValue(static_cast<QQuickItem *>(item)));
-    }
-    void surfaceUnmapped() {
-        QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
-        if (surface == m_fullscreenSurface)
-            m_fullscreenSurface = 0;
-        QQuickItem *item = surface->surfaceItem();
-        emit windowDestroyed(QVariant::fromValue(item));
-    }
-
-    void surfaceDestroyed(QObject *object) {
-        QWaylandSurface *surface = static_cast<QWaylandSurface *>(object);
-        if (surface == m_fullscreenSurface)
-            m_fullscreenSurface = 0;
-        QQuickItem *item = surface->surfaceItem();
-        emit windowDestroyed(QVariant::fromValue(item));
-    }
+    void surfaceMapped();
+    void surfaceUnmapped();
+    void surfaceDestroyed(QObject *object);
 
     void sendCallbacks() {
         if (m_fullscreenSurface)

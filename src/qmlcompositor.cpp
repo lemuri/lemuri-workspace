@@ -3,6 +3,7 @@
 #include "surfaceitem.h"
 
 #include <QQmlContext>
+#include <QApplication>
 
 QmlCompositor::QmlCompositor()
     : QWaylandCompositor(this, 0, DefaultExtensions | SubSurfaceExtension)
@@ -21,6 +22,17 @@ QmlCompositor::QmlCompositor()
 QWaylandSurface *QmlCompositor::fullscreenSurface() const
 {
     return m_fullscreenSurface;
+}
+
+void QmlCompositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
+{
+    if ((m_cursorSurface != surface) && surface) {
+        connect(surface, &QWaylandSurface::damaged, this, &QmlCompositor::updateCursor);
+    }
+
+    m_cursorSurface = surface;
+    m_cursorHotspotX = hotspotX;
+    m_cursorHotspotY = hotspotY;
 }
 
 void QmlCompositor::surfaceMapped()
@@ -77,4 +89,20 @@ void QmlCompositor::surfaceCreated(QWaylandSurface *surface)
             this, &QmlCompositor::surfaceMapped);
     connect(surface, &QWaylandSurface::unmapped,
             this, &QmlCompositor::surfaceUnmapped);
+}
+
+void QmlCompositor::updateCursor()
+{
+    if (!m_cursorSurface) {
+        return;
+    }
+
+    QCursor cursor(QPixmap::fromImage(m_cursorSurface->image()), m_cursorHotspotX, m_cursorHotspotY);
+    static bool cursorIsSet = false;
+    if (cursorIsSet) {
+        QGuiApplication::changeOverrideCursor(cursor);
+    } else {
+        QGuiApplication::setOverrideCursor(cursor);
+        cursorIsSet = true;
+    }
 }

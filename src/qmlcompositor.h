@@ -18,6 +18,8 @@ public:
 
     QWaylandSurface *fullscreenSurface() const;
 
+    virtual void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY);
+
 signals:
     void windowAdded(QVariant window);
     void windowDestroyed(QVariant window);
@@ -61,7 +63,15 @@ protected:
 
     void surfaceCreated(QWaylandSurface *surface);
 
+private slots:
+    void updateCursor();
+
 private:
     QWaylandSurface *m_fullscreenSurface;
+
+    // Cursor
+    QWaylandSurface *m_cursorSurface = 0;
+    int m_cursorHotspotX = 0;
+    int m_cursorHotspotY = 0;
 };
 #endif // QMLCOMPOSITOR_H

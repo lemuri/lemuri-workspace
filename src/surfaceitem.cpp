@@ -26,6 +26,9 @@
 
 #include <QtCore/QTimer>
 
+#include <QtCompositor/QWaylandInputDevice>
+#include <QtCompositor/QWaylandCompositor>
+
 #include "surfaceitem.h"
 
 class SurfaceItemPrivate
@@ -80,7 +83,6 @@ SurfaceItem::SurfaceItem(QQuickItem *parent)
     : QWaylandSurfaceItem(parent)
     , d_ptr(new SurfaceItemPrivate(this))
 {
-    setAcceptHoverEvents(true);
 }
 
 SurfaceItem::SurfaceItem(QWaylandSurface *surface, QQuickItem *parent)
@@ -137,32 +139,20 @@ void SurfaceItem::touchEvent(QTouchEvent *event)
 
 void SurfaceItem::hoverEnterEvent(QHoverEvent *event)
 {
-    QMouseEvent mouseEvent(QEvent::Enter,
-                           event->pos(),
-                           Qt::NoButton,
-                           Qt::NoButton,
-                           event->modifiers());
-    QWaylandSurfaceItem::mouseMoveEvent(&mouseEvent);
+    QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
+    inputDevice->sendMouseMoveEvent(surface(), event->pos());
 }
 
 void SurfaceItem::hoverMoveEvent(QHoverEvent *event)
 {
-    QMouseEvent mouseEvent(QEvent::MouseMove,
-                           event->pos(),
-                           Qt::NoButton,
-                           Qt::NoButton,
-                           event->modifiers());
-    QWaylandSurfaceItem::mouseMoveEvent(&mouseEvent);
+    QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
+    inputDevice->sendMouseMoveEvent(surface(), event->pos());
 }
 
 void SurfaceItem::hoverLeaveEvent(QHoverEvent *event)
 {
-    QMouseEvent mouseEvent(QEvent::Leave,
-                           event->pos(),
-                           Qt::NoButton,
-                           Qt::NoButton,
-                           event->modifiers());
-    QWaylandSurfaceItem::mouseMoveEvent(&mouseEvent);
+    QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
+    inputDevice->sendMouseMoveEvent(surface(), event->pos());
 }
 
 #include "moc_surfaceitem.cpp"

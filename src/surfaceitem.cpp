@@ -105,7 +105,6 @@ bool SurfaceItem::isUnresponsive() const
 void SurfaceItem::mousePressEvent(QMouseEvent *event)
 {
     Q_D(SurfaceItem);
-    qDebug() << Q_FUNC_INFO << surface() << hasFocus();
 
     if (surface() && !hasFocus()) {
         // Give focus to this surface when the mouse is pressed
@@ -139,20 +138,26 @@ void SurfaceItem::touchEvent(QTouchEvent *event)
 
 void SurfaceItem::hoverEnterEvent(QHoverEvent *event)
 {
-    QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
-    inputDevice->sendMouseMoveEvent(surface(), event->pos());
+    if (surface()) {
+        QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
+        inputDevice->sendMouseMoveEvent(surface(), event->pos());
+    }
 }
 
 void SurfaceItem::hoverMoveEvent(QHoverEvent *event)
 {
-    QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
-    inputDevice->sendMouseMoveEvent(surface(), event->pos());
+    if (surface()) {
+        QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
+        inputDevice->sendMouseMoveEvent(surface(), event->pos());
+    }
 }
 
 void SurfaceItem::hoverLeaveEvent(QHoverEvent *event)
 {
-    QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
-    inputDevice->sendMouseMoveEvent(surface(), event->pos());
+    if (surface()) {
+        QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
+        inputDevice->sendMouseMoveEvent(surface(), event->pos());
+    }
 }
 
 #include "moc_surfaceitem.cpp"

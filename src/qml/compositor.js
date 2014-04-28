@@ -84,7 +84,7 @@ function relayout() {
         var cx = (ix + 0.5) * w;
         var cy = (iy + 0.5) * h;
 
-        windowList[i].targetScale = 0.98 * Math.min(w / windowList[i].width, h / windowList[i].height);
+//        windowList[i].targetScale = 0.98 * Math.min(w / windowList[i].width, h / windowList[i].height);
 
         windowList[i].targetX = (cx - windowList[i].width / 2);
         windowList[i].targetY = (cy - windowList[i].height / 2);
@@ -97,59 +97,86 @@ function addWindow(window)
         windowList = new Array(0);
 
     windowList.push(window);
-    relayout();
+
+    window.z = windowList.length
+    window.targetX = 0
+    window.targetY = 0
+//    relayout();
+}
+
+function moveFront(window)
+{
+    var i;
+    var found;
+    for (i = 0; i < windowList.length; ++i) {
+        if (found) {
+            console.debug("lower Z: " + windowList[i].z)
+            console.debug("lower new Z: " + i)
+            windowList[i].z = i - 1
+        } else if (windowList[i] == window) {
+            console.debug("found window: " + i)
+            found = i
+        }
+    }
+    root.selectedWindow = window
+    window.z = windowList.length
+    windowList.splice(found, 1)
+    windowList.push(window)
 }
 
 function removeWindow(window)
 {
     var i;
     for (i = 0; i < windowList.length; ++i) {
-        if (windowList[i] == window)
+        if (windowList[i] == window) {
+            console.debug("windowList: " + windowList.length )
+            console.debug("windowList[" + i)
+            windowList.splice(i, 1);
             break;
-    }
-
-    var index = windowList[i].index;
-    var dim = Math.ceil(Math.sqrt(windowList.length));
-    var maxY = Math.floor((windowList.length-1) / dim);
-
-    var shrinking = Math.ceil(Math.sqrt(windowList.length - 1)) != dim;
-
-    while (true) {
-        var ix = index % dim;
-        var iy = Math.floor(index / dim);
-
-        if (shrinking) {
-            if (iy > 0)
-                --iy;
-            else if (++ix == dim)
-                break;
-        } else {
-            if (iy < maxY) {
-                if (ix > 0)
-                    --ix;
-                else
-                    ++iy;
-            } else {
-                ++ix;
-            }
         }
-
-        var next = iy * dim + ix;
-
-        var currentIndex = indexes[index];
-        var nextIndex = indexes[next];
-
-        if (nextIndex == null)
-            break;
-
-        var temp = windowList[currentIndex];
-        windowList[currentIndex] = windowList[nextIndex];
-        windowList[currentIndex].index = currentIndex;
-        windowList[nextIndex] = temp;
-
-        index = next;
     }
 
-    windowList.splice(indexes[index], 1);
-    relayout();
+//    var index = windowList[i].index;
+//    var dim = Math.ceil(Math.sqrt(windowList.length));
+//    var maxY = Math.floor((windowList.length-1) / dim);
+
+//    var shrinking = Math.ceil(Math.sqrt(windowList.length - 1)) != dim;
+
+//    while (true) {
+//        var ix = index % dim;
+//        var iy = Math.floor(index / dim);
+
+//        if (shrinking) {
+//            if (iy > 0)
+//                --iy;
+//            else if (++ix == dim)
+//                break;
+//        } else {
+//            if (iy < maxY) {
+//                if (ix > 0)
+//                    --ix;
+//                else
+//                    ++iy;
+//            } else {
+//                ++ix;
+//            }
+//        }
+
+//        var next = iy * dim + ix;
+
+//        var currentIndex = indexes[index];
+//        var nextIndex = indexes[next];
+
+//        if (nextIndex == null)
+//            break;
+
+//        var temp = windowList[currentIndex];
+//        windowList[currentIndex] = windowList[nextIndex];
+//        windowList[currentIndex].index = currentIndex;
+//        windowList[nextIndex] = temp;
+
+//        index = next;
+//    }
+
+//    relayout();
 }

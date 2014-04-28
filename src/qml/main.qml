@@ -45,12 +45,17 @@ Item {
     id: root
 
     property variant selectedWindow: null
+    onSelectedWindowChanged: {
+        console.debug("onSelectedWindowChanged" + selectedWindow)
+    }
+
     property bool hasFullscreenWindow: typeof compositor != "undefined" && compositor.fullscreenSurface !== null
 
     onHasFullscreenWindowChanged: console.log("has fullscreen window: " + hasFullscreenWindow);
 
     Image {
         id: background
+        z: -1
         Behavior on opacity {
             NumberAnimation { easing.type: Easing.InCubic; duration: 200; }
         }
@@ -90,7 +95,7 @@ Item {
 
         windowContainer.opacity = 1
         windowContainer.animationsEnabled = true;
-        window.takeFocus()
+//        window.takeFocus()
     }
 
     function windowResized(window) {
@@ -106,6 +111,11 @@ Item {
         var windowContainer = window.parent;
         if (windowContainer.runDestroyAnimation)
             windowContainer.runDestroyAnimation();
+    }
+
+    function moveFront(window) {
+        var windowContainer = window.parent
+        CompositorLogic.moveFront(windowContainer)
     }
 
     function removeWindow(window) {

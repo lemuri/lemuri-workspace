@@ -48,7 +48,6 @@ Item {
     y: targetY
     width: targetWidth
     height: targetHeight
-    scale: targetScale
 
     visible: isFullscreen || !root.hasFullscreenWindow
     onVisibleChanged: {
@@ -62,13 +61,21 @@ Item {
     property real targetY
     property real targetWidth
     property real targetHeight
-    property real targetScale
 
     property variant window: null
     onWindowChanged: {
         window.parent = container
         targetWidth = window.width
         targetHeight = window.height
+        window.focusChanged.connect(gotFocus)
+    }
+
+    function gotFocus(got) {
+        if (got) {
+            container.parent.moveFront(window);
+        }
+
+        console.debug("Got focus + " + got)
     }
 
     property bool animationsEnabled: false
@@ -95,11 +102,6 @@ Item {
     Behavior on height {
         enabled: container.animationsEnabled;
         NumberAnimation { easing.type: Easing.InCubic; duration: 200; }
-    }
-
-    Behavior on scale {
-        enabled: container.animationsEnabled;
-        NumberAnimation { easing.type: Easing.InQuad; duration: 200; }
     }
 
     Behavior on opacity {
@@ -134,7 +136,6 @@ Item {
                 ParallelAnimation {
                     NumberAnimation { target: container; property: "x"; easing.type: Easing.Linear; to: targetX; duration: 400; }
                     NumberAnimation { target: container; property: "y"; easing.type: Easing.Linear; to: targetY; duration: 400; }
-                    NumberAnimation { target: container; property: "scale"; easing.type: Easing.Linear; to: targetScale; duration: 400; }
                 }
                 ScriptAction {
                     script: container.z = 0

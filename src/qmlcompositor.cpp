@@ -43,6 +43,7 @@ void QmlCompositor::surfaceMapped()
         return;
 
     qDebug() << Q_FUNC_INFO << surface->title() << surface->windowType() << surface->windowFlags();
+    qDebug() << Q_FUNC_INFO << surface->size() << surface->pos() << surface->windowProperties();
     if (surface->windowType() == QWaylandSurface::Popup) {
         qDebug() << surface->title() << "POPUP";
     }

@@ -11,6 +11,13 @@ find_package(Qt5 COMPONENTS
     Compositor
 )
 
+# Find pkg-config
+find_package(PkgConfig "0.22" REQUIRED)
+
+# Find EGL libraries
+pkg_check_modules(GL gl REQUIRED)
+pkg_check_modules(EGL egl REQUIRED)
+
 # We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
 add_definitions(${Qt5Core_DEFINITIONS} -DQT_COMPOSITOR_QUICK)
 add_definitions(-std=gnu++11)

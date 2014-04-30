@@ -43,7 +43,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 
-#include "qmlcompositor.h"
+#include "lemuricompositor.h"
 
 #include "config.h"
 
@@ -58,10 +58,8 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    QmlCompositor compositor;
-    compositor.setTitle(QLatin1String("Lemuri Workspace"));
-    compositor.setGeometry(0, 0, 1024, 768);
-    compositor.show();
+    LemuriCompositor compositor;
+    compositor.initOuputs();
 
     return app.exec();
 }

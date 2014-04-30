@@ -91,37 +91,59 @@ function relayout() {
     }
 }
 
-function addWindow(window)
+function addWindow(windowContainer)
 {
     if (windowList == null)
         windowList = new Array(0);
 
-    windowList.push(window);
+    windowContainer.z = windowList.length
+    if (windowContainer.window.popup) {
+        console.debug("popup added")
+        windowContainer.targetX = windowList.length * 50
+        windowContainer.targetY = windowList.length * 50
+    } else {
+        windowContainer.targetX = (windowList.length + 1) * 50
+        windowContainer.targetY = (windowList.length + 1) * 50
+    }
 
-    window.z = windowList.length
-    window.targetX = 0
-    window.targetY = 0
+    console.debug("Adding window at Z: " + windowList.length)
+    windowList.push(windowContainer);
+
 //    relayout();
 }
 
 function moveFront(window)
 {
-    var i;
-    var found;
-    for (i = 0; i < windowList.length; ++i) {
-        if (found) {
-            console.debug("lower Z: " + windowList[i].z)
-            console.debug("lower new Z: " + i)
-            windowList[i].z = i - 1
-        } else if (windowList[i] == window) {
-            console.debug("found window: " + i)
-            found = i
-        }
+    var initialZ = window.z
+    console.debug("initial Z window at: " + initialZ)
+    for (var i = initialZ + 1; i < windowList.length; ++i) {
+        console.debug("above window new Z: " + window.z)
+        console.debug("selected window new Z: " + i)
+        windowList[i].z = window.z
+        window.z = i
     }
     root.selectedWindow = window
-    window.z = windowList.length
-    windowList.splice(found, 1)
+//    window.z = windowList.length
+    console.debug("new Z window at: " + window.z)
+
+    windowList.splice(initialZ, 1)
     windowList.push(window)
+}
+
+function selectNextWindow() {
+    if (windowList.length > 1) {
+        var windowContainer = windowList[windowList.length - 2]
+        CompositorLogic.moveFront(windowContainer)
+        windowContainer.window.takeFocus()
+    }
+}
+
+function selectPreviousWindow() {
+    if (windowList.length > 1) {
+        var windowContainer = windowList[0]
+        CompositorLogic.moveFront(windowContainer)
+        windowContainer.window.takeFocus()
+    }
 }
 
 function removeWindow(window)

@@ -102,6 +102,11 @@ bool SurfaceItem::isUnresponsive() const
     return d->unresponsive;
 }
 
+bool SurfaceItem::isPopUp() const
+{
+    return surface()->windowType() == QWaylandSurface::Popup;
+}
+
 void SurfaceItem::mousePressEvent(QMouseEvent *event)
 {
     Q_D(SurfaceItem);

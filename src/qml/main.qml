@@ -132,6 +132,8 @@ Item {
         compositor.windowAdded.connect(windowAdded)
         compositor.windowDestroyed.connect(windowDestroyed)
         compositor.windowResized.connect(windowResized)
+        compositor.selectNextWindow.connect(CompositorLogic.selectNextWindow)
+        compositor.selectPreviousWindow.connect(CompositorLogic.selectPreviousWindow)
     }
 
     Keys.onPressed: {

@@ -85,6 +85,16 @@ void ViewOutput::printInfo()
 void ViewOutput::keyPressEvent(QKeyEvent *event)
 {
     m_idleInhibit++;
+
+    qCDebug(LEMURI_COMPOSITOR) << event->modifiers() << (Qt::MetaModifier | Qt::ShiftModifier) << Qt::MetaModifier << (event->modifiers() == (Qt::MetaModifier | Qt::ShiftModifier));
+    qCDebug(LEMURI_COMPOSITOR) << (event->modifiers() & Qt::MetaModifier) << (event->modifiers() & Qt::ShiftModifier) << event->key();
+    if (event->modifiers() == Qt::MetaModifier && event->key() == Qt::Key_Tab) {
+        qCDebug(LEMURI_COMPOSITOR) << "selectNextWindow";
+        emit m_compositor->selectNextWindow();
+    } else if (event->modifiers() == (Qt::MetaModifier | Qt::ShiftModifier) && event->key() == Qt::Key_Backtab) {
+        qCDebug(LEMURI_COMPOSITOR) << "selectPreviousWindow";
+        emit m_compositor->selectPreviousWindow();
+    }
     QQuickView::keyPressEvent(event);
 }
 

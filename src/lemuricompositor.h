@@ -23,6 +23,8 @@ signals:
     void windowDestroyed(QVariant window);
     void windowResized(QVariant window);
     void fullscreenSurfaceChanged();
+    void selectNextWindow();
+    void selectPreviousWindow();
 
 public slots:
     void destroyWindow(QVariant window);
